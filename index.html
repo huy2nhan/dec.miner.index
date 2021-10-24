@@ -20,6 +20,7 @@
             min-width: 150px;
             color: lightseagreen;
             font-weight: bold;
+            cursor: pointer;
         }
 
         .dec {
@@ -95,7 +96,19 @@
                 "decmac005",
                 "decmac006",
                 "decmac007",
-                "decmac008"
+                "decmac008",
+                "decmac009",
+                "decmac010",
+                "decmac011",
+                "decmac012",
+                "decmac013",
+                "decmac014",
+                "decmac015",
+                "decmac016",
+                "decmac017",
+                "decmac018",
+                "decmac019",
+                "decmac020"
             ];
 
             for (const account of hcn) {
@@ -106,6 +119,10 @@
                 }
             }
         });
+
+        function checkCards(username) {
+            window.open(`https://peakmonsters.com/@${username}/cards`);
+        }
 
         function getdata(owner, username) {
             return Promise.all([
@@ -133,7 +150,7 @@
                 const questStatus = quest?.completed_items + '/' + quest?.total_items
                 const questClass = quest?.completed_items == quest?.total_items ? 'quest-ok' : '';
                 if (dec) {
-                    $(owner).append(`<li><div class="index"><div class="account">${username}</div><div class="dec">${dec.balance}<div class="unit">DEC</div></div><div class="rating">${rating}</div><div class="rate">${rate}%</div><div class="quest ${questClass}">${questStatus}</div></div></li>`);
+                    $(owner).append(`<li><div class="index"><div class="account" onclick="checkCards('${username}')">${username}</div><div class="dec">${dec.balance}<div class="unit">DEC</div></div><div class="rating">${rating}</div><div class="rate">${rate}%</div><div class="quest ${questClass}">${questStatus}</div></div></li>`);
                 }
             });
         }
