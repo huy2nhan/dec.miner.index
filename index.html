@@ -131,21 +131,21 @@
                     context: document
                 }),
                 $.ajax({
-                    url: "https://api.splinterlands.io/players/details?name=" + username,
-                    context: document
-                }),
-                $.ajax({
                     url: "https://api.splinterlands.io/players/quests?username=" + username,
                     context: document
-                }),
+                }),                
+                // $.ajax({
+                //     url: "https://api.splinterlands.io/players/details?name=" + username,
+                //     context: document
+                // }),
             ]).then((results) => {
                 const balance = results[0];
-                const playerD = results[1];
-                const quest = results[2][0];
+                const quest = results[1][0];
+                const playerD = results[2];                
 
                 const dec = balance?.filter(x => x.token === 'DEC')?.[0];
-                const rating = playerD.rating;
-                const rate = playerD.capture_rate / 100;
+                const rating = playerD?.rating;
+                const rate = playerD?.capture_rate / 100;
 
                 const questStatus = quest?.completed_items + '/' + quest?.total_items
                 const questClass = quest?.completed_items == quest?.total_items ? 'quest-ok' : '';
