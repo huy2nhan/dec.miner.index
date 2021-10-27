@@ -134,10 +134,10 @@
                     url: "https://api.splinterlands.io/players/quests?username=" + username,
                     context: document
                 }),                
-                // $.ajax({
-                //     url: "https://api.splinterlands.io/players/details?name=" + username,
-                //     context: document
-                // }),
+                $.ajax({
+                    url: "https://api.splinterlands.io/players/details?name=" + username,
+                    context: document
+                }),
             ]).then((results) => {
                 const balance = results[0];
                 const quest = results[1][0];
