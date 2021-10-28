@@ -12,21 +12,46 @@
             margin-left: 40px;
         }
 
+        .save-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+
         .index {
             display: flex;
         }
 
         .account {
-            min-width: 150px;
+            min-width: 180px;
             color: lightseagreen;
             font-weight: bold;
             cursor: pointer;
+        }
+
+        .power {
+            font-weight: normal;
+            color: orange;
         }
 
         .dec {
             min-width: 150px;
             color: black;
             display: flex;
+        }
+
+        .period-earning {
+            min-width: 120px;
+            color: black;
+            display: flex;
+        }
+
+        .ok-pe {
+            color: green;
+        }
+
+        .no-pe {
+            color: red;
         }
 
         .unit {
@@ -36,7 +61,7 @@
 
         .rating {
             margin-left: 50px;
-            min-width: 150px;
+            min-width: 120px;
         }
 
         .rate {
@@ -62,19 +87,28 @@
 
 <body>
     <h3>DEC Miners Index</h3>
+    <button class="save-btn" style="display: none;" onclick="perisistData();"> Save </button>
 
     <div class="header">
         <div class="account">Account</div>
         <div class="dec">DEC Balance</div>
+        <div class="period-earning pe-header">N/A</div>
         <div class="rating">Rating</div>
         <div class="rate">Capture Rate</div>
         <div class="rate">Quest comleted?</div>
     </div>
-    <ul id="owner1"></ul>
+    <ul id="indexes"></ul>
 
     <script>
+        const persistIntervalMinutes = 240; // 4 hours
+        const storageKey = "sps";
+        const storage = localStorage;
+        const savedData = JSON.parse(storage.getItem(storageKey));
+        const accountsInfo = [];
+        const timestamp = new Date().getTime();
+
         $(document).ready(async () => {
-            const hcn = [
+            const accList = [
                 "cookiesmonster",
                 "honey-jar",
                 "salt-chili",
@@ -85,8 +119,8 @@
                 "solari-fox",
                 "dracusip",
                 "doggo-wolf",
-                "minas-tirith",                
-                "horyong",                
+                "minas-tirith",
+                "horyong",
                 "hopppy",
                 "--------Standard--------",
                 "decmac001",
@@ -111,20 +145,38 @@
                 "decmac020"
             ];
 
-            for (const account of hcn) {
+            if (savedData) {
+                $(".pe-header").html(`Earning in ${Math.round((timestamp - savedData?.timestamp) / 60000)} mins`);
+            }
+
+            for (const account of accList) {
                 if (account.startsWith("-")) {
-                    $("#owner1").append(`<li><div>${account}</div></li>`);
+                    $("#indexes").append(`<li><div>${account}</div></li>`);
                 } else {
-                    await getdata("#owner1", account);
+                    const data = await getData(account);
+                    accountsInfo.push(data);
+
+                    const last = savedData?.data?.find(x => x.account === account);
+
+                    // Calculation
+                    calculatePlayersDetail(last, data);
+
+                    // Rendering
+                    renderAccount(data);
                 }
             }
+
+            // Check and persist data to storage
+            checkAndPersistData();
+
+            $(".save-btn").css("display", "block");
         });
 
         function checkCards(username) {
             window.open(`https://peakmonsters.com/@${username}/cards`);
         }
 
-        function getdata(owner, username) {
+        function getData(username) {
             return Promise.all([
                 $.ajax({
                     url: "https://api.splinterlands.io/players/balances?username=" + username,
@@ -133,7 +185,7 @@
                 $.ajax({
                     url: "https://api.splinterlands.io/players/quests?username=" + username,
                     context: document
-                }),                
+                }),
                 $.ajax({
                     url: "https://api.splinterlands.io/players/details?name=" + username,
                     context: document
@@ -141,18 +193,62 @@
             ]).then((results) => {
                 const balance = results[0];
                 const quest = results[1][0];
-                const playerD = results[2];                
+                const playerD = results[2];
 
-                const dec = balance?.filter(x => x.token === 'DEC')?.[0];
-                const rating = playerD?.rating;
-                const rate = playerD?.capture_rate / 100;
-
-                const questStatus = quest?.completed_items + '/' + quest?.total_items
-                const questClass = quest?.completed_items == quest?.total_items ? 'quest-ok' : '';
-                if (dec) {
-                    $(owner).append(`<li><div class="index"><div class="account" onclick="checkCards('${username}')">${username}</div><div class="dec">${dec.balance}<div class="unit">DEC</div></div><div class="rating">${rating}</div><div class="rate">${rate}%</div><div class="quest ${questClass}">${questStatus}</div></div></li>`);
-                }
+                return {
+                    account: username,
+                    balance: balance?.filter(x => x.token === 'DEC')?.[0],
+                    detail: playerD,
+                    quest
+                };
             });
+        }
+
+        function renderAccount(account) {
+            const dec = account.balance;
+            const rating = account.detail.rating;
+            const rate = account.detail.capture_rate / 100;
+
+            const questStatus = account.quest?.completed_items + '/' + account.quest?.total_items
+            const questClass = account.quest?.completed_items == account.quest?.total_items ? 'quest-ok' : '';
+
+            if (dec) {
+                const li = [];
+                const peClass = account.periodEarning > 0 ? 'ok-pe' : 'no-pe';
+                li.push(
+                    `<div class="account" onclick="checkCards('${account.account}')">${account.account} <span class='power'>(${account.detail.collection_power})</span></div>`,
+                    `<div class="dec">${dec.balance.toFixed(2)}<div class="unit">DEC</div></div>`,
+                    `<div class="period-earning ${peClass}">${account.periodEarning.toFixed(2)}<div class="unit">DEC</div></div>`,
+                    `<div class="rating">${rating}</div>`,
+                    `<div class="rate">${rate}%</div>`,
+                    `<div class="quest ${questClass}">${questStatus}</div>`
+                );
+                $('#indexes').append(`<li><div class="index">${li.join("")}</div></li>`);
+            }
+        }
+
+        function checkAndPersistData() {
+            if (savedData) {
+                // Check period to see if it is time to persist new data
+                if ((timestamp - savedData.timestamp) / 60000 >= persistIntervalMinutes) {
+                    perisistData();
+                }
+            } else {
+                // First perisistent
+                perisistData();
+            }
+        }
+
+        function perisistData() {
+            const toSave = JSON.stringify({
+                timestamp,
+                data: accountsInfo
+            });
+            storage.setItem(storageKey, toSave);
+        }
+
+        function calculatePlayersDetail(savedData, currentData) {
+            currentData.periodEarning = currentData.balance.balance - savedData.balance.balance;
         }
     </script>
 </body>
