@@ -156,10 +156,12 @@
                     const data = await getData(account);
                     accountsInfo.push(data);
 
-                    const last = savedData?.data?.find(x => x.account === account);
+                    if (savedData) {
+                        const last = savedData?.data?.find(x => x.account === account);
 
-                    // Calculation
-                    calculatePlayersDetail(last, data);
+                        // Calculation
+                        calculatePlayersDetail(last, data);
+                    }
 
                     // Rendering
                     renderAccount(data);
