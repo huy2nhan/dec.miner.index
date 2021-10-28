@@ -220,7 +220,7 @@
                 li.push(
                     `<div class="account" onclick="checkCards('${account.account}')">${account.account} <span class='power'>(${account.detail.collection_power})</span></div>`,
                     `<div class="dec">${dec.balance.toFixed(2)}<div class="unit">DEC</div></div>`,
-                    `<div class="period-earning ${peClass}">${account.periodEarning ? account.periodEarning.toFixed(2) : ''}<div class="unit">DEC</div></div>`,
+                    `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
                     `<div class="rating">${rating}</div>`,
                     `<div class="rate">${rate}%</div>`,
                     `<div class="quest ${questClass}">${questStatus}</div>`
