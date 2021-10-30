@@ -142,7 +142,18 @@
                 "decmac017",
                 "decmac018",
                 "decmac019",
-                "decmac020"
+                "decmac020",
+                "--------Legolas--------",
+                "legolas000",
+                "legolas001",
+                "legolas002",
+                "legolas003",
+                "legolas005",
+                "legolas006",
+                "legolas007",
+                "legolas008",
+                "legolas009",
+                "legolas010"
             ];
 
             if (savedData) {
@@ -193,6 +204,7 @@
                     context: document
                 }),
             ]).then((results) => {
+                console.log(`NHC results`, results);
                 const balance = results[0];
                 const quest = results[1][0];
                 const playerD = results[2];
@@ -214,19 +226,17 @@
             const questStatus = account.quest?.completed_items + '/' + account.quest?.total_items
             const questClass = account.quest?.completed_items == account.quest?.total_items ? 'quest-ok' : '';
 
-            if (dec) {
-                const li = [];
-                const peClass = account.periodEarning > 0 ? 'ok-pe' : 'no-pe';
-                li.push(
-                    `<div class="account" onclick="checkCards('${account.account}')">${account.account} <span class='power'>(${account.detail.collection_power})</span></div>`,
-                    `<div class="dec">${dec.balance.toFixed(2)}<div class="unit">DEC</div></div>`,
-                    `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
-                    `<div class="rating">${rating}</div>`,
-                    `<div class="rate">${rate}%</div>`,
-                    `<div class="quest ${questClass}">${questStatus}</div>`
-                );
-                $('#indexes').append(`<li><div class="index">${li.join("")}</div></li>`);
-            }
+            const li = [];
+            const peClass = account.periodEarning > 0 ? 'ok-pe' : 'no-pe';
+            li.push(
+                `<div class="account" onclick="checkCards('${account.account}')">${account.account} <span class='power'>(${account.detail.collection_power})</span></div>`,
+                `<div class="dec">${dec?.balance?.toFixed(2) ?? 0}<div class="unit">DEC</div></div>`,
+                `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
+                `<div class="rating">${rating}</div>`,
+                `<div class="rate">${rate}%</div>`,
+                `<div class="quest ${questClass}">${questStatus}</div>`
+            );
+            $('#indexes').append(`<li><div class="index">${li.join("")}</div></li>`);
         }
 
         function checkAndPersistData() {
@@ -250,7 +260,7 @@
         }
 
         function calculatePlayersDetail(savedData, currentData) {
-            currentData.periodEarning = currentData.balance.balance - savedData.balance.balance;
+            currentData.periodEarning = ((currentData?.balance?.balance ?? 0) - (savedData?.balance?.balance ?? 0));
         }
     </script>
 </body>
