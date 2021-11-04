@@ -34,6 +34,11 @@
             color: orange;
         }
 
+        .power-less-1k {
+            font-weight: normal;
+            color: red;
+        }
+
         .dec {
             min-width: 150px;
             color: black;
@@ -96,6 +101,7 @@
         <div class="rating">Rating</div>
         <div class="rate">Capture Rate</div>
         <div class="rate">Quest comleted?</div>
+        <div class="rate">Win rate</div>
     </div>
     <ul id="indexes"></ul>
 
@@ -157,7 +163,7 @@
             ];
 
             if (savedData) {
-                $(".pe-header").html(`Earning in ${Math.round((timestamp - savedData?.timestamp) / 60000)} mins`);
+                $(".pe-header").html(`Earn in ${Math.round((timestamp - savedData?.timestamp) / 60000)} mins`);
             }
 
             for (const account of accList) {
@@ -225,16 +231,19 @@
 
             const questStatus = account.quest?.completed_items + '/' + account.quest?.total_items
             const questClass = account.quest?.completed_items == account.quest?.total_items ? 'quest-ok' : '';
+            const winRate = (account.detail.wins * 100 / account.detail.battles).toFixed(2);
 
             const li = [];
             const peClass = account.periodEarning > 0 ? 'ok-pe' : 'no-pe';
+            const powerClass = account.detail.collection_power >= 1000 ? 'power' : 'power-less-1k';
             li.push(
-                `<div class="account" onclick="checkCards('${account.account}')">${account.account} <span class='power'>(${account.detail.collection_power})</span></div>`,
+                `<div class="account" onclick="checkCards('${account.account}')">${account.account} <span class='${powerClass}'>(${account.detail.collection_power})</span></div>`,
                 `<div class="dec">${dec?.balance?.toFixed(2) ?? 0}<div class="unit">DEC</div></div>`,
                 `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
                 `<div class="rating">${rating}</div>`,
                 `<div class="rate">${rate}%</div>`,
-                `<div class="quest ${questClass}">${questStatus}</div>`
+                `<div class="quest ${questClass}">${questStatus}</div>`,
+                `<div class="rate">${winRate}%</div>`
             );
             $('#indexes').append(`<li><div class="index">${li.join("")}</div></li>`);
         }
