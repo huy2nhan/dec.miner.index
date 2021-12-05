@@ -21,6 +21,7 @@
         .index {
             display: flex;
         }
+
         .index:hover {
             background-color: rgb(236, 221, 134);
             font-weight: bold;
@@ -147,6 +148,14 @@
                 "legolas008",
                 "legolas009",
                 "legolas010",
+                "legolas011",
+                "legolas012",
+                "legolas013",
+                "legolas014",
+                "legolas015",
+                "legolas016",
+                "legolas017",
+                "legolas018",
                 "--------Bot 2--------",
                 "decmac001",
                 "decmac002",
@@ -178,8 +187,10 @@
                 $(".pe-header").html(`Earn in ${Math.round((timestamp - savedData?.timestamp) / 60000)} mins`);
             }
 
+            let count = 0;
             for (const account of accList) {
                 if (account.startsWith("-")) {
+                    count = 0;
                     $("#indexes").append(`<li><div>${account}</div></li>`);
                 } else {
                     const data = await getData(account);
@@ -193,7 +204,7 @@
                     }
 
                     // Rendering
-                    renderAccount(data);
+                    renderAccount(data, ++count);
                 }
             }
 
@@ -236,7 +247,7 @@
             });
         }
 
-        function renderAccount(account) {
+        function renderAccount(account, no) {
             const dec = account.balance;
             const rating = account.detail.rating;
             const rate = account.detail.capture_rate / 100;
@@ -249,7 +260,7 @@
             const peClass = account.periodEarning > 0 ? 'ok-pe' : 'no-pe';
             const powerClass = account.detail.collection_power >= 1000 ? 'power' : 'power-less-1k';
             li.push(
-                `<div class="account" onclick="checkCards('${account.account}')">${account.account} <span class='${powerClass}'>(${account.detail.collection_power})</span></div>`,
+                `<div class="account" onclick="checkCards('${account.account}')">${account.account !== 'cookiesmonster' ? no.toString().padStart(2, '0') + '.' : ''}${account.account} <span class='${powerClass}'>(${account.detail.collection_power})</span></div>`,
                 `<div class="dec">${dec?.balance?.toFixed(2) ?? 0}<div class="unit">DEC</div></div>`,
                 `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
                 `<div class="rating">${rating}</div>`,
