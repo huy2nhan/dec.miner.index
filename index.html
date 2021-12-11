@@ -85,6 +85,7 @@
         .quest-ok {
             font-weight: bold;
             color: green;
+            cursor: pointer;
         }
 
         .owner {
@@ -96,12 +97,24 @@
         li {
             border-bottom: 1px solid #f5f5f5;
         }
+
+        .summary {
+            display: flex;
+        }
+        .total {
+            width: 218px;
+        }
     </style>
 </head>
 
 <body>
     <h3>DEC Miners Index</h3>
     <button class="save-btn" style="display: none;" onclick="perisistData();"> Save </button>
+    <div class="summary">
+        <div id="totalDec" class="total"></div>
+        <div id="totalDecExMain" class="total"></div>
+    </div>
+    <hr/>
 
     <div class="header">
         <div class="account">Account</div>
@@ -196,6 +209,8 @@
                     const data = await getData(account);
                     accountsInfo.push(data);
 
+                    totalDec(accountsInfo);
+
                     if (savedData) {
                         const last = savedData?.data?.find(x => x.account === account);
 
@@ -218,6 +233,17 @@
             window.open(`https://peakmonsters.com/@${username}/cards`);
         }
 
+        function explorePlayer(username) {
+            window.open(`https://peakmonsters.com/@${username}/explorer`);
+        }
+
+        function totalDec(accountsInfo) {
+            const totalDec = accountsInfo.map(x => x.balance.balance).reduce((a, b) => a + b, 0);
+            const totalDecExMain = totalDec - accountsInfo[0].balance.balance;
+            $('#totalDec').html(`Total DEC: ${totalDec.toFixed(0)}`);
+            $('#totalDecExMain').html(`Total DEC (exclude main): ${totalDecExMain.toFixed(0)}`);
+        }
+
         function getData(username) {
             return Promise.all([
                 $.ajax({
@@ -233,7 +259,6 @@
                     context: document
                 }),
             ]).then((results) => {
-                console.log(`NHC results`, results);
                 const balance = results[0];
                 const quest = results[1][0];
                 const playerD = results[2];
@@ -265,7 +290,7 @@
                 `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
                 `<div class="rating">${rating}</div>`,
                 `<div class="rate">${rate}%</div>`,
-                `<div class="quest ${questClass}">${questStatus}</div>`,
+                `<div class="quest ${questClass}" onclick="explorePlayer('${account.account}')">${questStatus}</div>`,
                 `<div class="rate">${winRate}%</div>`
             );
             $('#indexes').append(`<li><div class="index">${li.join("")}</div></li>`);
