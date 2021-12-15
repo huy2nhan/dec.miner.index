@@ -50,6 +50,10 @@
             display: flex;
         }
 
+        .credit {
+            min-width: 120px;
+        }
+
         .period-earning {
             min-width: 120px;
             color: black;
@@ -120,6 +124,7 @@
     <div class="header">
         <div class="account">Account</div>
         <div class="dec">DEC Balance</div>
+        <div class="credit">Credits</div>
         <div class="period-earning pe-header">N/A</div>
         <div class="rating">Rating</div>
         <div class="rate">Capture Rate</div>
@@ -273,6 +278,7 @@
                 return {
                     account: username,
                     balance: balance?.filter(x => x.token === 'DEC')?.[0],
+                    credits: balance?.filter(x => x.token === 'CREDITS')?.[0],
                     detail: playerD,
                     quest
                 };
@@ -283,6 +289,7 @@
             const dec = account.balance;
             const rating = account.detail.rating;
             const rate = account.detail.capture_rate / 100;
+            const credits = account.credits;
 
             const questStatus = account.quest?.completed_items + '/' + account.quest?.total_items
             const questClass = account.quest?.completed_items == account.quest?.total_items ? 'quest-ok' : '';
@@ -294,6 +301,7 @@
             li.push(
                 `<div class="account" onclick="checkCards('${account.account}')">${account.account !== 'cookiesmonster' ? no.toString().padStart(2, '0') + '.' : ''}${account.account} <span class='${powerClass}'>(${account.detail.collection_power})</span></div>`,
                 `<div class="dec">${dec?.balance?.toFixed(2) ?? 0}<div class="unit">DEC</div></div>`,
+                `<div class="credit">${credits?.balance?.toFixed(2) ?? 0}</div>`,
                 `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
                 `<div class="rating">${rating}</div>`,
                 `<div class="rate">${rate}%</div>`,
