@@ -114,7 +114,7 @@
 
 <body>
     <h3>DEC Miners Index</h3>
-    <button class="save-btn" style="display: none;" onclick="perisistData();"> Save </button>
+    <button class="save-btn" style="display: none;" onclick="persistData();"> Save </button>
     <div class="summary">
         <div id="totalDec" class="total"></div>
         <div id="totalDecExMain" class="total"></div>
@@ -130,6 +130,7 @@
         <div class="rate">Capture Rate</div>
         <div class="rate">Quest comleted?</div>
         <div class="rate">Win rate</div>
+        <div class="rate">Recent rate</div>
     </div>
     <ul id="indexes"></ul>
 
@@ -236,7 +237,7 @@
             }
 
             // Check and persist data to storage
-            checkAndPersistData();
+            // checkAndPersistData();
 
             $(".save-btn").css("display", "block");
         });
@@ -306,7 +307,8 @@
                 `<div class="rating">${rating}</div>`,
                 `<div class="rate">${rate}%</div>`,
                 `<div class="quest ${questClass}" onclick="explorePlayer('${account.account}')">${questStatus}</div>`,
-                `<div class="rate">${winRate}%</div>`
+                `<div class="rate">${winRate}%</div>`,
+                `<div class="rate">${account.recentWinRate.toFixed(2)}% (${account.recentBattles})</div>`
             );
             $('#indexes').append(`<li><div class="index">${li.join("")}</div></li>`);
         }
@@ -315,15 +317,15 @@
             if (savedData) {
                 // Check period to see if it is time to persist new data
                 if ((timestamp - savedData.timestamp) / 60000 >= persistIntervalMinutes) {
-                    perisistData();
+                    persistData();
                 }
             } else {
                 // First perisistent
-                perisistData();
+                persistData();
             }
         }
 
-        function perisistData() {
+        function persistData() {
             const toSave = JSON.stringify({
                 timestamp,
                 data: accountsInfo
@@ -333,6 +335,8 @@
 
         function calculatePlayersDetail(savedData, currentData) {
             currentData.periodEarning = ((currentData?.balance?.balance ?? 0) - (savedData?.balance?.balance ?? 0));
+            currentData.recentBattles = ((currentData?.detail?.battles ?? 0) - (savedData?.detail?.battles ?? 0));
+            currentData.recentWinRate = ((currentData?.detail?.wins ?? 0) - (savedData?.detail?.wins ?? 0)) * 100 / currentData.recentBattles;
         }
     </script>
 </body>
