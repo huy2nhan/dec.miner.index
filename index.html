@@ -101,6 +101,7 @@
         .summary {
             display: flex;
         }
+
         .total {
             width: 218px;
         }
@@ -114,7 +115,7 @@
         <div id="totalDec" class="total"></div>
         <div id="totalDecExMain" class="total"></div>
     </div>
-    <hr/>
+    <hr />
 
     <div class="header">
         <div class="account">Account</div>
@@ -244,7 +245,7 @@
         }
 
         function totalDec(accountsInfo) {
-            const totalDec = accountsInfo.map(x => x.balance?.balance).reduce((a, b) => a + b, 0);
+            const totalDec = accountsInfo.map(x => isNaN(x.balance?.balance) ? 0 : x.balance?.balance).reduce((a, b) => a + b, 0);
             const totalDecExMain = totalDec - accountsInfo[0].balance?.balance;
             $('#totalDec').html(`Total DEC: ${totalDec.toFixed(0)}`);
             $('#totalDecExMain').html(`Total DEC (exclude main): ${totalDecExMain.toFixed(0)}`);
