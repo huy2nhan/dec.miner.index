@@ -206,18 +206,28 @@
                 "decmac027",
                 "decmac028",
                 "decmac029",
-                "decmac030"
+                "decmac030",
+                "--------       -------",
             ];
 
             if (savedData) {
                 $(".pe-header").html(`Earn in ${Math.round((timestamp - savedData?.timestamp) / 60000)} mins`);
             }
 
+            let bot = -1;
+            let effective = [];
             let count = 0;
             for (const account of accList) {
-                if (account.startsWith("-")) {
-                    count = 0;
-                    $("#indexes").append(`<li><div>${account}</div></li>`);
+                if (account.startsWith("-")) {                    
+                    if (effective?.length) {
+                        const botEffective = average(effective);
+                        const old = $(`#bot${bot}`).html();
+                        $(`#bot${bot}`).html(`${old} (${botEffective.toFixed(2)}) %`)
+                    }                    
+                    bot++;
+                    effective=[];
+                    count = 0;                   
+                    $("#indexes").append(`<li id="bot${bot}"><span>${account}</span></li>`);
                 } else {
                     const data = await getData(account);
                     accountsInfo.push(data);
@@ -229,6 +239,7 @@
 
                         // Calculation
                         calculatePlayersDetail(last, data);
+                        if (!isNaN(data.recentWinRate)) effective.push(data.recentWinRate);
                     }
 
                     // Rendering
@@ -242,6 +253,7 @@
             $(".save-btn").css("display", "block");
         });
 
+        const average = (array) => array.reduce((a, b) => a + b) / array.length;
         function checkCards(username) {
             window.open(`https://peakmonsters.com/@${username}/cards`);
         }
