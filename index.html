@@ -216,16 +216,18 @@
 
             let bot = -1;
             let effective = [];
+            let effectiveEarning = 0;
             let count = 0;
             for (const account of accList) {
                 if (account.startsWith("-")) {                    
                     if (effective?.length) {
                         const botEffective = average(effective);
                         const old = $(`#bot${bot}`).html();
-                        $(`#bot${bot}`).html(`${old} (${botEffective.toFixed(2)}) %`)
+                        $(`#bot${bot}`).html(`${old} (${botEffective.toFixed(2)}%) (${effectiveEarning.toFixed(2)} DEC)`)
                     }                    
                     bot++;
                     effective=[];
+                    effectiveEarning = 0;
                     count = 0;                   
                     $("#indexes").append(`<li id="bot${bot}"><span>${account}</span></li>`);
                 } else {
@@ -240,6 +242,7 @@
                         // Calculation
                         calculatePlayersDetail(last, data);
                         if (!isNaN(data.recentWinRate)) effective.push(data.recentWinRate);
+                        if (!isNaN(data.periodEarning)) effectiveEarning += data.periodEarning;
                     }
 
                     // Rendering
