@@ -78,6 +78,14 @@
             min-width: 120px;
         }
 
+        .rating-good {
+            color: green;   
+        }
+
+        .rating-less-1k {
+            color: red;   
+        }
+
         .rate {
             min-width: 150px;
         }
@@ -350,7 +358,7 @@
                     // Rendering
                     renderAccount(data, ++count);
                 }
-                
+
                 await sleep(200);
             }
 
@@ -418,12 +426,13 @@
             const li = [];
             const peClass = account.periodEarning > 0 ? 'ok-pe' : 'no-pe';
             const powerClass = account.detail.collection_power >= 1000 ? 'power' : 'power-less-1k';
+            const ratingClass = account.detail.rating >= 400 ? 'rating-good' : 'rating-less-1k';
             li.push(
                 `<div class="account" onclick="checkCards('${account.account}')">${account.account !== 'cookiesmonster' ? no.toString().padStart(2, '0') + '.' : ''}${account.account} <span class='${powerClass}'>(${account.detail.collection_power})</span></div>`,
                 `<div class="dec">${dec?.balance?.toFixed(2) ?? 0}<div class="unit">DEC</div></div>`,
                 `<div class="credit">${credits?.balance?.toFixed(2) ?? 0}</div>`,
                 `<div class="period-earning ${peClass}">${savedData ? `${account.periodEarning.toFixed(2)} <div class="unit">DEC</div>` : ''}</div>`,
-                `<div class="rating">${rating}</div>`,
+                `<div class="rating ${ratingClass}">${rating}</div>`,
                 `<div class="rate">${rate}%</div>`,
                 `<div class="quest ${questClass}" onclick="explorePlayer('${account.account}')">${questStatus}</div>`,
                 `<div class="rate">${winRate}%</div>`,
