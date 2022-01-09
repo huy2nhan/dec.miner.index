@@ -79,11 +79,11 @@
         }
 
         .rating-good {
-            color: green;   
+            color: green;
         }
 
         .rating-less-1k {
-            color: red;   
+            color: red;
         }
 
         .rate {
@@ -183,7 +183,7 @@
                 "legolas015",
                 "legolas016",
                 "legolas017",
-                "legolas018",                
+                "legolas018",
                 "decmac001",
                 "decmac002",
                 "decmac003",
@@ -329,16 +329,16 @@
             let effectiveEarning = 0;
             let count = 0;
             for (const account of accList) {
-                if (account.startsWith("-")) {                    
+                if (account.startsWith("-")) {
                     if (effective?.length) {
                         const botEffective = average(effective);
                         const old = $(`#bot${bot}`).html();
                         $(`#bot${bot}`).html(`${old} (${botEffective.toFixed(2)}%) (${effectiveEarning.toFixed(2)} DEC)`)
-                    }                    
+                    }
                     bot++;
-                    effective=[];
+                    effective = [];
                     effectiveEarning = 0;
-                    count = 0;                   
+                    count = 0;
                     $("#indexes").append(`<li id="bot${bot}"><span>${account}</span></li>`);
                 } else {
                     const data = await getData(account);
@@ -359,7 +359,7 @@
                     renderAccount(data, ++count);
                 }
 
-                await sleep(200);
+                sleep(230);
             }
 
             // Check and persist data to storage
@@ -367,6 +367,15 @@
 
             $(".save-btn").css("display", "block");
         });
+
+        function sleep(milliseconds) {
+            var start = new Date().getTime();
+            for (var i = 0; i < 1e7; i++) {
+                if ((new Date().getTime() - start) > milliseconds) {
+                    break;
+                }
+            }
+        }
 
         const average = (array) => array.reduce((a, b) => a + b) / array.length;
         function checkCards(username) {
